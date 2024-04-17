@@ -62,7 +62,11 @@ func (c *CmdArgs) Validate() error {
 	case "free_text", "json", "json_stream":
 		// nothing to do
 	default:
-		return errors.New("style must be 'free_text', 'json' or 'json_stream'.")
+		return errors.New("style must be 'free_text', 'json' or 'json_stream'")
+	}
+
+	if len(c.Args) < 2 {
+		return errors.New("args must need 2 files or more. CIDR list file and IP addresses list files")
 	}
 
 	return nil
