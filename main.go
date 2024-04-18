@@ -158,11 +158,12 @@ func (p *progress) prints() {
 	}
 
 	output := os.Stderr
-	if p.counter%10000 == 0 {
+	if p.counter%2500 == 0 {
 		fmt.Fprintf(output, ".")
 	}
 	if p.counter%100000 == 0 {
-		fmt.Fprintln(output, "")
+		text := fmt.Sprintf(" %d", p.counter)
+		fmt.Fprintln(output, text)
 	}
 }
 
