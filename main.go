@@ -53,8 +53,20 @@ func main() {
 	}
 
 	output := os.Stdout
+	if args.OutFile != "" {
+		output, err = os.Create(args.OutFile)
+		if err != nil {
+			logger.Error("failed to create a output file", "err", err)
+			os.Exit(exitStatusInputFileError)
+		}
+		defer output.Close()
+	}
 
 	results := make([]result, 0)
+	p := progress{
+		noProgress: args.NoProgress,
+		counter:    0,
+	}
 	for _, file := range args.Args[1:] {
 		cp, err := os.Open(file)
 		defer cp.Close()
@@ -68,6 +80,9 @@ func main() {
 			l := strings.TrimSpace(sc.Text())
 			ip := net.ParseIP(l)
 			for _, c := range cidr {
+				p.increment()
+				p.prints()
+
 				contains := c.Contains(ip)
 				r := result{
 					IPFile:   file,
@@ -126,6 +141,29 @@ func (r *result) format() (string, error) {
 		return "", err
 	}
 	return string(b), nil
+}
+
+type progress struct {
+	noProgress bool
+	counter    int
+}
+
+func (p *progress) increment() {
+	p.counter++
+}
+
+func (p *progress) prints() {
+	if p.noProgress {
+		return
+	}
+
+	output := os.Stderr
+	if p.counter%10000 == 0 {
+		fmt.Fprintf(output, ".")
+	}
+	if p.counter%100000 == 0 {
+		fmt.Fprintln(output, "")
+	}
 }
 
 func isLinePrinting(style string) bool {
