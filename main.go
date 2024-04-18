@@ -86,8 +86,8 @@ func main() {
 				contains := c.Contains(ip)
 				r := result{
 					IPFile:   file,
-					CIDR:     c,
-					IP:       ip,
+					CIDR:     c.String(),
+					IP:       ip.String(),
 					Contains: contains,
 					Style:    args.Style,
 				}
@@ -110,7 +110,7 @@ func main() {
 	}
 
 	if !isLinePrinting(args.Style) {
-		b, err := json.Marshal(results)
+		b, err := json.MarshalIndent(results, "", "  ")
 		if err != nil {
 			logger.Error("failed to marshal json", "err", err)
 			os.Exit(exitStatusInputFileError)
@@ -123,11 +123,11 @@ func main() {
 }
 
 type result struct {
-	IPFile   string     `json:"ip_file"`
-	CIDR     *net.IPNet `json:"cidr"`
-	IP       net.IP     `json:"ip"`
-	Contains bool       `json:"contains"`
-	Style    string     `json:"-"`
+	IPFile   string `json:"ip_file"`
+	CIDR     string `json:"cidr"`
+	IP       string `json:"ip"`
+	Contains bool   `json:"contains"`
+	Style    string `json:"-"`
 }
 
 func (r *result) format() (string, error) {
