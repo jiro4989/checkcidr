@@ -34,7 +34,7 @@ func ParseArgs() (*CmdArgs, error) {
 	flag.Parse()
 	args.Args = flag.Args()
 
-	if err := args.Validate(); err != nil {
+	if err := args.validate(); err != nil {
 		return nil, err
 	}
 
@@ -57,12 +57,16 @@ func flagHelpMessage() {
 	flag.PrintDefaults()
 }
 
-func (c *CmdArgs) Validate() error {
+func (c *CmdArgs) validate() error {
 	switch c.Style {
 	case "free_text", "json", "json_stream":
 		// nothing to do
 	default:
 		return errors.New("style must be 'free_text', 'json' or 'json_stream'")
+	}
+
+	if c.Version {
+		return nil
 	}
 
 	if len(c.Args) < 2 {
