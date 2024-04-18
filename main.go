@@ -63,10 +63,7 @@ func main() {
 	}
 
 	results := make([]result, 0)
-	p := progress{
-		noProgress: args.NoProgress,
-		counter:    0,
-	}
+	p := NewProgress(args.NoProgress)
 	for _, file := range args.Args[1:] {
 		cp, err := os.Open(file)
 		defer cp.Close()
@@ -80,8 +77,8 @@ func main() {
 			l := strings.TrimSpace(sc.Text())
 			ip := net.ParseIP(l)
 			for _, c := range cidr {
-				p.increment()
-				p.prints()
+				p.Increment()
+				p.Prints()
 
 				contains := c.Contains(ip)
 				r := result{
@@ -108,7 +105,7 @@ func main() {
 			os.Exit(exitStatusInputFileError)
 		}
 	}
-	p.printsEnd()
+	p.PrintsEnd()
 
 	if !isLinePrinting(args.Style) {
 		b, err := json.MarshalIndent(results, "", "  ")
@@ -142,38 +139,6 @@ func (r *result) format() (string, error) {
 		return "", err
 	}
 	return string(b), nil
-}
-
-type progress struct {
-	noProgress bool
-	counter    int
-}
-
-func (p *progress) increment() {
-	p.counter++
-}
-
-func (p *progress) prints() {
-	if p.noProgress {
-		return
-	}
-
-	output := os.Stderr
-	if p.counter%2500 == 0 {
-		fmt.Fprintf(output, ".")
-	}
-	if p.counter%100000 == 0 {
-		text := fmt.Sprintf(" %d", p.counter)
-		fmt.Fprintln(output, text)
-	}
-}
-
-func (p *progress) printsEnd() {
-	if p.noProgress {
-		return
-	}
-
-	fmt.Fprintln(os.Stderr, "")
 }
 
 func isLinePrinting(style string) bool {
