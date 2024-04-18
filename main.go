@@ -108,6 +108,7 @@ func main() {
 			os.Exit(exitStatusInputFileError)
 		}
 	}
+	p.printsEnd()
 
 	if !isLinePrinting(args.Style) {
 		b, err := json.MarshalIndent(results, "", "  ")
@@ -165,6 +166,14 @@ func (p *progress) prints() {
 		text := fmt.Sprintf(" %d", p.counter)
 		fmt.Fprintln(output, text)
 	}
+}
+
+func (p *progress) printsEnd() {
+	if p.noProgress {
+		return
+	}
+
+	fmt.Fprintln(os.Stderr, "")
 }
 
 func isLinePrinting(style string) bool {
