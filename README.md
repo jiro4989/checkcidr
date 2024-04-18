@@ -6,6 +6,9 @@ A CLI to check that IP addresses are included in CIDR.
 
 ```bash
 checkcidr <CIDR list file> <IP addresses list file>...
+
+# ex:
+checkcidr testdata/cidr_1.txt testdata/ip_1.txt
 ```
 
 `checkcidr` prints result as free text style.
